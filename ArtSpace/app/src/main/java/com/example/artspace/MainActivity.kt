@@ -9,20 +9,24 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,34 +61,59 @@ private val artworks = listOf(
 
 @Composable
 fun ArtSpaceScreen() {
-    var artworkId by remember { mutableIntStateOf(1) }
+    var artworkId by rememberSaveable { mutableStateOf(1) }
     val artwork = artworks[artworkId - 1]
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            ArtworkWall(artwork.image, artwork.title)
+    val onPrevious = { artworkId = if (artworkId == 1) artworks.size else artworkId - 1 }
+    val onNext = { artworkId = if (artworkId == artworks.size) 1 else artworkId + 1 }
+
+    BoxWithConstraints(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+        if (maxWidth > maxHeight && maxWidth >= 600.dp) {
+            Row(
+                modifier = Modifier.fillMaxSize().padding(24.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ArtworkWall(artwork.image, artwork.title)
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    ArtworkDescriptor(artwork.title, artwork.artist, artwork.year)
+                    DisplayController(onPrevious = onPrevious, onNext = onNext)
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    ArtworkWall(artwork.image, artwork.title)
+                }
+                ArtworkDescriptor(artwork.title, artwork.artist, artwork.year)
+                DisplayController(onPrevious = onPrevious, onNext = onNext)
+            }
         }
-        ArtworkDescriptor(artwork.title, artwork.artist, artwork.year)
-        DisplayController(
-            onPrevious = { artworkId = if (artworkId == 1) artworks.size else artworkId - 1 },
-            onNext = { artworkId = if (artworkId == artworks.size) 1 else artworkId + 1 }
-        )
     }
 }
 
 @Composable
 fun ArtworkWall(@DrawableRes artwork: Int, @StringRes title: Int, modifier: Modifier = Modifier) {
     Surface(
-        modifier = modifier.widthIn(max = 420.dp).border(8.dp, Color.White),
+        modifier = modifier.sizeIn(maxWidth = 420.dp, maxHeight = 420.dp)
+            .aspectRatio(1f).border(8.dp, Color.White),
         shadowElevation = 8.dp
     ) {
         Image(
             painter = painterResource(artwork),
             contentDescription = stringResource(title),
             contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
