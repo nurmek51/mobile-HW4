@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Art Space</string>
+    <string name="golden_horizon">Golden Horizon</string>
+    <string name="moonlit_peaks">Moonlit Peaks</string>
+    <string name="quiet_valley">Quiet Valley</string>
+    <string name="artist">Art Space Studio</string>
+    <string name="artwork_year">2026</string>
+    <string name="artwork_credit">%1$s (%2$s)</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>
