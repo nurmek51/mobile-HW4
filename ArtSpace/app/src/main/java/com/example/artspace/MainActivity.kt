@@ -20,6 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,17 +42,35 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private data class Artwork(
+    @DrawableRes val image: Int,
+    @StringRes val title: Int,
+    @StringRes val artist: Int,
+    @StringRes val year: Int
+)
+
+private val artworks = listOf(
+    Artwork(R.drawable.art_golden_horizon, R.string.golden_horizon, R.string.artist_golden, R.string.year_golden),
+    Artwork(R.drawable.art_moonlit_peaks, R.string.moonlit_peaks, R.string.artist_moonlit, R.string.year_moonlit),
+    Artwork(R.drawable.art_quiet_valley, R.string.quiet_valley, R.string.artist_valley, R.string.year_valley)
+)
+
 @Composable
 fun ArtSpaceScreen() {
+    var artworkId by remember { mutableIntStateOf(1) }
+    val artwork = artworks[artworkId - 1]
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            ArtworkWall(R.drawable.art_golden_horizon, R.string.golden_horizon)
+            ArtworkWall(artwork.image, artwork.title)
         }
-        ArtworkDescriptor(R.string.golden_horizon)
-        DisplayController(onPrevious = {}, onNext = {})
+        ArtworkDescriptor(artwork.title, artwork.artist, artwork.year)
+        DisplayController(
+            onPrevious = { artworkId = if (artworkId == 1) artworks.size else artworkId - 1 },
+            onNext = { artworkId = if (artworkId == artworks.size) 1 else artworkId + 1 }
+        )
     }
 }
 
@@ -68,7 +90,12 @@ fun ArtworkWall(@DrawableRes artwork: Int, @StringRes title: Int, modifier: Modi
 }
 
 @Composable
-fun ArtworkDescriptor(@StringRes title: Int, modifier: Modifier = Modifier) {
+fun ArtworkDescriptor(
+    @StringRes title: Int,
+    @StringRes artist: Int,
+    @StringRes year: Int,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.fillMaxWidth().padding(vertical = 20.dp),
         horizontalAlignment = Alignment.Start
@@ -81,8 +108,8 @@ fun ArtworkDescriptor(@StringRes title: Int, modifier: Modifier = Modifier) {
         Text(
             text = stringResource(
                 R.string.artwork_credit,
-                stringResource(R.string.artist),
-                stringResource(R.string.artwork_year)
+                stringResource(artist),
+                stringResource(year)
             ),
             style = MaterialTheme.typography.bodyMedium
         )

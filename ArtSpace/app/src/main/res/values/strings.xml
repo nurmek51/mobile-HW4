@@ -3,8 +3,12 @@
     <string name="golden_horizon">Golden Horizon</string>
     <string name="moonlit_peaks">Moonlit Peaks</string>
     <string name="quiet_valley">Quiet Valley</string>
-    <string name="artist">Art Space Studio</string>
-    <string name="artwork_year">2026</string>
+    <string name="artist_golden">Mira Chen</string>
+    <string name="artist_moonlit">Noah Vale</string>
+    <string name="artist_valley">Lina Park</string>
+    <string name="year_golden">2024</string>
+    <string name="year_moonlit">2025</string>
+    <string name="year_valley">2026</string>
     <string name="artwork_credit">%1$s (%2$s)</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
